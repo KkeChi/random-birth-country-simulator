@@ -55,6 +55,6 @@ function showMap(lat, lng) {
     }
 }
 
-document.getElementById("darkToggle").addEventListener("click", () => {
+document.getElementById("darkModeToggle").addEventListener("click", () => {
     document.body.classList.toggle("dark-mode");
 });
