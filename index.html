@@ -19,7 +19,7 @@
     <div class="container">
       <h1>환생 시뮬레이터</h1>
       <div class="controls">
-        <button id="darkToggle" aria-pressed="false">🌓 다크모드</button>
+        <button id="darkModeToggle" aria-pressed="false">🌓 다크모드</button>
       </div>
     </div>
   </header>
@@ -28,7 +28,8 @@
     <section class="hero">
       <p class="lead">전 세계 인구 비율을 기준으로 — 당신이 다시 태어난 나라를 확인해보세요.</p>
       <div class="actions">
-        <button id="spinBtn" class="primary">룰렛 돌리기</button>
+        <!-- id를 generateBtn 으로 변경 -->
+        <button id="generateBtn" class="primary">룰렛 돌리기</button>
         <button id="resetBtn" class="secondary">초기화</button>
       </div>
     </section>
@@ -48,7 +49,7 @@
       </div>
 
       <div id="map" class="map"></div>
-      <div class="small muted">데이터 출처: REST Countries API / UN/Our World in Data (확률 계산용 인구 합계). :contentReference[oaicite:1]{index=1}</div>
+      <div class="small muted">데이터 출처: REST Countries API / UN/Our World in Data (확률 계산용 인구 합계).</div>
     </section>
   </main>
 
