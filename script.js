@@ -1,18 +1,15 @@
+let countries = [];
 const genders = ["남성", "여성"];
 const classes = ["부유층", "중산층", "서민", "하층민"];
-
 let map;
 let marker;
-let countries = [];
 
 async function loadCountries() {
   try {
     const response = await fetch("countries.json");
-    if (!response.ok) throw new Error("국가 데이터 로드 실패");
     countries = await response.json();
-  } catch (error) {
+  } catch (e) {
     alert("국가 데이터 로드 실패! 페이지를 새로고침 해주세요.");
-    console.error(error);
   }
 }
 
@@ -39,31 +36,20 @@ function showMap(lat, lng) {
   }
 }
 
-function updateResult(country) {
-  document.getElementById("countryName").textContent = country.name;
-  document.getElementById("probability").textContent = `${country.probability.toFixed(2)}%`;
-  const gender = genders[Math.floor(Math.random() * genders.length)];
-  document.getElementById("gender").textContent = gender;
-  const econClass = classes[Math.floor(Math.random() * classes.length)];
-  document.getElementById("econClass").textContent = econClass;
-
-  // 국기 이미지 (using country code in lowercase if available)
-  const flagImg = document.getElementById("flagImg");
-  // countries.json에 "code": "KR" 등 ISO 3166-1 alpha-2 코드가 있어야 합니다.
-  if (country.code) {
-    flagImg.src = `https://flagcdn.com/w80/${country.code.toLowerCase()}.png`;
+function updateFlag(country) {
+  const flagImg = document.getElementById("flagImage");
+  if (country && country.code) {
+    flagImg.src = `https://flagcdn.com/w320/${country.code.toLowerCase()}.png`;
     flagImg.alt = `${country.name} 국기`;
   } else {
     flagImg.src = "";
-    flagImg.alt = "";
+    flagImg.alt = "국기 없음";
   }
-
-  document.getElementById("resultPanel").classList.remove("hidden");
 }
 
 document.getElementById("generateBtn").addEventListener("click", () => {
   if (countries.length === 0) {
-    alert("국가 데이터가 준비되지 않았습니다.");
+    alert("국가 데이터가 아직 로드되지 않았습니다.");
     return;
   }
   const country = getRandomCountry();
@@ -71,25 +57,38 @@ document.getElementById("generateBtn").addEventListener("click", () => {
     alert("국가 데이터가 없습니다.");
     return;
   }
-  updateResult(country);
+  const gender = genders[Math.floor(Math.random() * genders.length)];
+  const economicClass = classes[Math.floor(Math.random() * classes.length)];
+
+  document.getElementById("countryName").textContent = country.name;
+  document.getElementById("probability").textContent = country.probability.toFixed(2) + "%";
+  document.getElementById("gender").textContent = gender;
+  document.getElementById("econClass").textContent = economicClass;
+
+  updateFlag(country);
   showMap(country.lat, country.lng);
+
+  document.getElementById("resultPanel").classList.remove("hidden");
 });
 
-// 다크모드 토글
 document.getElementById("darkModeToggle").addEventListener("click", () => {
   document.body.classList.toggle("dark-mode");
 });
 
-// 공유 버튼 기능 (클립보드 복사 및 SNS)
 document.getElementById("shareBtn").addEventListener("click", () => {
-  const url = window.location.href;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => {
-      alert("현재 페이지 URL이 클립보드에 복사되었습니다!");
+  if (navigator.share) {
+    navigator.share({
+      title: "환생 국가 시뮬레이터",
+      text: "내가 태어날 확률 높은 나라가 어디인지 확인해보세요!",
+      url: window.location.href,
     });
   } else {
-    alert("클립보드 복사 기능을 지원하지 않는 브라우저입니다.");
+    // fallback: URL 복사
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      alert("링크가 복사되었습니다!");
+    });
   }
 });
 
-window.onload = loadCountries;
+// 초기 데이터 로드
+loadCountries();
