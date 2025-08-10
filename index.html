@@ -1,65 +1,60 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>환생 시뮬레이터 - 다시 태어난다면 어느 나라에서?</title>
-  <meta name="description" content="당신이 다시 태어난다면 어느 나라에서 환생할까요? 전 세계 인구 비율 기반으로 확률과 성별·계층을 시뮬레이션합니다." />
-  <meta name="keywords" content="환생, 환생 시뮬레이터, 출생 확률, 랜덤 국가, 세계지도, reincarnation, birth simulator" />
-  <meta name="author" content="Kkechi" />
+const countries = [
+    { name: "대한민국", probability: 0.67, lat: 36.5, lng: 127.5 },
+    { name: "미국", probability: 4.25, lat: 37.1, lng: -95.7 },
+    { name: "중국", probability: 17.8, lat: 35.8, lng: 104.1 },
+    { name: "인도", probability: 17.6, lat: 20.6, lng: 78.9 },
+    // ... 나머지 국가들
+];
 
-  <!-- Leaflet (지도) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script defer src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+const genders = ["남성", "여성"];
+const classes = ["부유층", "중산층", "서민", "하층민"];
 
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <header class="site-header">
-    <div class="container">
-      <h1>환생 시뮬레이터</h1>
-      <div class="controls">
-        <button id="darkModeToggle" aria-pressed="false">🌓 다크모드</button>
-      </div>
-    </div>
-  </header>
+let map;
+let marker;
 
-  <main class="container">
-    <section class="hero">
-      <p class="lead">전 세계 인구 비율을 기준으로 — 당신이 다시 태어난 나라를 확인해보세요.</p>
-      <div class="actions">
-        <!-- id를 generateBtn 으로 변경 -->
-        <button id="generateBtn" class="primary">룰렛 돌리기</button>
-        <button id="resetBtn" class="secondary">초기화</button>
-      </div>
-    </section>
+document.getElementById("generateBtn").addEventListener("click", () => {
+    const country = getRandomCountry();
+    if (!country) {
+        alert("국가 데이터가 없습니다.");
+        return;
+    }
 
-    <section id="resultPanel" class="card hidden" aria-live="polite">
-      <div class="result-top">
-        <img id="flagImg" alt="" class="flag" />
-        <div>
-          <h2 id="countryName">—</h2>
-          <div id="probability" class="muted">확률: —</div>
-        </div>
-      </div>
+    const gender = genders[Math.floor(Math.random() * genders.length)];
+    const economicClass = classes[Math.floor(Math.random() * classes.length)];
 
-      <div class="result-body">
-        <p id="gender">성별: —</p>
-        <p id="econClass">경제적 위치: —</p>
-      </div>
+    document.getElementById("countryName").textContent = country.name;
+    document.getElementById("probability").textContent = `출생 확률: ${country.probability.toFixed(2)}%`;
+    document.getElementById("gender").textContent = `성별: ${gender}`;
+    document.getElementById("econClass").textContent = `경제적 위치: ${economicClass}`;
 
-      <div id="map" class="map"></div>
-      <div class="small muted">데이터 출처: REST Countries API / UN/Our World in Data (확률 계산용 인구 합계).</div>
-    </section>
-  </main>
+    document.getElementById("resultPanel").classList.remove("hidden");
 
-  <footer class="site-footer">
-    <div class="container">
-      <small>© 2025 Reincarnation World Lottery</small>
-    </div>
-  </footer>
+    showMap(country.lat, country.lng);
+});
 
-  <!-- countries.js를 따로 관리하지 않고 런타임으로 가져옵니다 -->
-  <script src="script.js" defer></script>
-</body>
-</html>
+function getRandomCountry() {
+    const total = countries.reduce((sum, c) => sum + c.probability, 0);
+    if (total === 0) return null;
+    let r = Math.random() * total;
+    for (let country of countries) {
+        r -= country.probability;
+        if (r <= 0) return country;
+    }
+}
+
+function showMap(lat, lng) {
+    if (!map) {
+        map = L.map('map').setView([lat, lng], 4);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        marker = L.marker([lat, lng]).addTo(map);
+    } else {
+        map.setView([lat, lng], 4);
+        marker.setLatLng([lat, lng]);
+    }
+}
+
+document.getElementById("darkModeToggle").addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+});
