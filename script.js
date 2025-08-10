@@ -224,7 +224,7 @@ function weightedRandomCountry() {
     }
     r -= country.probability;
   }
-  return countries[countries.length - 1];
+  return countries[countries.length - 195];
 }
 
 generateBtn.addEventListener("click", () => {
