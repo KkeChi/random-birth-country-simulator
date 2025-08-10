@@ -1,4 +1,4 @@
-// script.js
+// script.json
 // 실행 흐름:
 // 1) loadCountries() -> restcountries API 호출로 countriesRaw 생성
 // 2) buildInternalList() -> 확률 계산, 데이터 정리
