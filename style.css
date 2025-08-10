@@ -3,57 +3,42 @@ body {
   margin: 10px;
   background-color: white;
   color: black;
-  text-align: center; /* 전체 중앙 정렬 기본 설정 */
+  transition: background-color 0.3s, color 0.3s;
 }
 
-.hidden {
-  display: none;
-}
-
-.ad-container {
-  border: 1px solid #aaa;
-  padding: 10px;
-  margin: 10px 0;
-  background-color: #f0f0f0;
-  text-align: center;
-  border-radius: 8px; /* 부드러운 테두리 */
-}
-
-/* 다크 모드 */
 .dark-mode {
   background-color: #121212;
   color: #eee;
 }
 
-/* 버튼 공통 스타일 */
+/* 버튼 스타일, 중앙 정렬 포함 */
 button {
-  margin: 8px 10px;
-  padding: 10px 18px;
+  margin: 5px;
+  padding: 8px 12px;
   cursor: pointer;
+  border-radius: 8px; /* 말랑한 느낌 */
   border: none;
-  border-radius: 25px; /* 둥근 말랑말랑한 모서리 */
-  background-color: #4CAF50; /* 부드러운 초록색 */
+  background-color: #4a90e2;
   color: white;
-  font-size: 16px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  font-weight: bold;
+  transition: background-color 0.3s;
 }
 
-/* 버튼 호버 효과 */
 button:hover {
-  background-color: #45a049;
-  box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+  background-color: #357ABD;
 }
 
-/* 버튼 포커스 아웃라인 제거 및 부드러운 효과 */
-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(69, 160, 73, 0.5);
+/* 중앙 정렬을 위한 컨테이너 */
+.header, .buttons-container {
+  text-align: center;
+  margin-bottom: 15px;
 }
 
-#flagImage {
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.3);
-  display: block;
-  margin: 20px auto; /* 이미지도 가운데 */
+/* 다크모드 버튼 배경 색도 조절 */
+.dark-mode button {
+  background-color: #5a8bd4;
+}
+
+.dark-mode button:hover {
+  background-color: #3a6bc4;
 }
