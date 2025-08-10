@@ -1,0 +1,40 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    transition: all 0.3s ease;
+}
+
+:root {
+    --bg: #ffffff;
+    --text: #000000;
+}
+
+.dark-mode {
+    --bg: #121212;
+    --text: #f0f0f0;
+}
+
+header, footer {
+    background-color: var(--bg);
+    text-align: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#map {
+    height: 300px;
+    margin-top: 20px;
+}
+
+.hidden {
+    display: none;
+}
