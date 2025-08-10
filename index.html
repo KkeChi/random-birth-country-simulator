@@ -1,127 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>If You Were Born</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 2rem;
-      background: #f5f5f5;
-    }
-    #result {
-      margin-top: 2rem;
-      background: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      display: none;
-    }
-    .ad-space {
-      margin: 2rem 0;
-      height: 90px;
-      background: #ddd;
-      text-align: center;
-      line-height: 90px;
-      color: #555;
-    }
-    .btn {
-      padding: 1rem 2rem;
-      font-size: 1.2rem;
-      background: #0077cc;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .lang-switch {
-      margin-bottom: 1rem;
-    }
-    #result img {
-      width: 80px;
-      height: auto;
-      margin-bottom: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 0 6px rgba(0,0,0,0.15);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="전 세계 195개국 중 당신이 환생할 나라와 성별, 계층, 위치를 알려주는 확률 시뮬레이터">
+    <meta name="keywords" content="환생, 나라 추첨, 출생 확률, 세계지도, 랜덤 국가, 시뮬레이터, Reincarnation, World Lottery">
+    <meta name="author" content="Your Name">
+    <title>환생 국가 시뮬레이터 - Reincarnation World Lottery</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
-  <h1 id="title">If You Were Randomly Born...</h1>
-  <div class="lang-switch">
-    <button onclick="setLanguage('en')">🇺🇸 English</button>
-    <button onclick="setLanguage('ko')">🇰🇷 한국어</button>
-  </div>
-  <button class="btn" onclick="spinRoulette()" id="spin-btn">Spin the Globe!</button>
+    <header>
+        <h1>환생 국가 시뮬레이터</h1>
+        <button id="darkModeToggle">🌙 다크모드</button>
+    </header>
 
-  <div class="ad-space">Ad Placeholder (Top)</div>
+    <main>
+        <p>전 세계 195개국 중, 당신이 환생할 나라는 어디일까요?</p>
+        <button id="generateBtn">결과 보기</button>
+        
+        <div id="result" class="hidden">
+            <h2 id="countryName"></h2>
+            <p id="probability"></p>
+            <p id="gender"></p>
+            <p id="class"></p>
+            <div id="map"></div>
+        </div>
+    </main>
 
-  <div id="result"></div>
+    <footer>
+        <p>© 2025 Reincarnation World Lottery</p>
+    </footer>
 
-  <div class="ad-space">Ad Placeholder (Bottom)</div>
-
-  <script>
-    const countries = [
-      { name: { en: "India", ko: "인도" }, capital: { en: "New Delhi", ko: "뉴델리" }, population: 1400000000, lifeExpectancy: 70.8, sexRatio: "108.2 males / 100 females", flagUrl: "https://flagcdn.com/w80/in.png", weight: 17.8 },
-      { name: { en: "China", ko: "중국" }, capital: { en: "Beijing", ko: "베이징" }, population: 1420000000, lifeExpectancy: 78.2, sexRatio: "105.1 males / 100 females", flagUrl: "https://flagcdn.com/w80/cn.png", weight: 17.5 },
-      { name: { en: "United States", ko: "미국" }, capital: { en: "Washington D.C.", ko: "워싱턴 D.C." }, population: 332000000, lifeExpectancy: 77.3, sexRatio: "98.4 males / 100 females", flagUrl: "https://flagcdn.com/w80/us.png", weight: 4.2 },
-      { name: { en: "Indonesia", ko: "인도네시아" }, capital: { en: "Jakarta", ko: "자카르타" }, population: 275000000, lifeExpectancy: 72.2, sexRatio: "101.2 males / 100 females", flagUrl: "https://flagcdn.com/w80/id.png", weight: 3.5 },
-      { name: { en: "Pakistan", ko: "파키스탄" }, capital: { en: "Islamabad", ko: "이슬라마바드" }, population: 240000000, lifeExpectancy: 67.3, sexRatio: "107.8 males / 100 females", flagUrl: "https://flagcdn.com/w80/pk.png", weight: 3.1 },
-      { name: { en: "Brazil", ko: "브라질" }, capital: { en: "Brasília", ko: "브라질리아" }, population: 216000000, lifeExpectancy: 75.9, sexRatio: "96.7 males / 100 females", flagUrl: "https://flagcdn.com/w80/br.png", weight: 2.6 },
-      { name: { en: "Nigeria", ko: "나이지리아" }, capital: { en: "Abuja", ko: "아부자" }, population: 223000000, lifeExpectancy: 61.2, sexRatio: "102.3 males / 100 females", flagUrl: "https://flagcdn.com/w80/ng.png", weight: 2.6 },
-      { name: { en: "Bangladesh", ko: "방글라데시" }, capital: { en: "Dhaka", ko: "다카" }, population: 170000000, lifeExpectancy: 72.3, sexRatio: "103.7 males / 100 females", flagUrl: "https://flagcdn.com/w80/bd.png", weight: 2.1 },
-      { name: { en: "Russia", ko: "러시아" }, capital: { en: "Moscow", ko: "모스크바" }, population: 146000000, lifeExpectancy: 72.4, sexRatio: "86.8 males / 100 females", flagUrl: "https://flagcdn.com/w80/ru.png", weight: 1.9 },
-      { name: { en: "Mexico", ko: "멕시코" }, capital: { en: "Mexico City", ko: "멕시코시티" }, population: 130000000, lifeExpectancy: 75.1, sexRatio: "95.4 males / 100 females", flagUrl: "https://flagcdn.com/w80/mx.png", weight: 1.7 },
-      { name: { en: "Japan", ko: "일본" }, capital: { en: "Tokyo", ko: "도쿄" }, population: 125000000, lifeExpectancy: 84.6, sexRatio: "95.0 males / 100 females", flagUrl: "https://flagcdn.com/w80/jp.png", weight: 1.6 },
-      { name: { en: "Ethiopia", ko: "에티오피아" }, capital: { en: "Addis Ababa", ko: "아디스아바바" }, population: 120000000, lifeExpectancy: 66.6, sexRatio: "101.5 males / 100 females", flagUrl: "https://flagcdn.com/w80/et.png", weight: 1.5 },
-      { name: { en: "Philippines", ko: "필리핀" }, capital: { en: "Manila", ko: "마닐라" }, population: 113000000, lifeExpectancy: 71.0, sexRatio: "103.0 males / 100 females", flagUrl: "https://flagcdn.com/w80/ph.png", weight: 1.4 },
-      { name: { en: "Egypt", ko: "이집트" }, capital: { en: "Cairo", ko: "카이로" }, population: 112000000, lifeExpectancy: 72.7, sexRatio: "104.1 males / 100 females", flagUrl: "https://flagcdn.com/w80/eg.png", weight: 1.4 },
-      { name: { en: "Vietnam", ko: "베트남" }, capital: { en: "Hanoi", ko: "하노이" }, population: 97000000, lifeExpectancy: 73.7, sexRatio: "99.7 males / 100 females", flagUrl: "https://flagcdn.com/w80/vn.png", weight: 1.2 },
-      { name: { en: "DR Congo", ko: "콩고 민주 공화국" }, capital: { en: "Kinshasa", ko: "킨샤사" }, population: 95000000, lifeExpectancy: 60.6, sexRatio: "99.5 males / 100 females", flagUrl: "https://flagcdn.com/w80/cd.png", weight: 1.2 },
-      { name: { en: "Turkey", ko: "터키" }, capital: { en: "Ankara", ko: "앙카라" }, population: 85000000, lifeExpectancy: 77.3, sexRatio: "101.4 males / 100 females", flagUrl: "https://flagcdn.com/w80/tr.png", weight: 1.1 },
-      { name: { en: "Iran", ko: "이란" }, capital: { en: "Tehran", ko: "테헤란" }, population: 86000000, lifeExpectancy: 76.5, sexRatio: "103.6 males / 100 females", flagUrl: "https://flagcdn.com/w80/ir.png", weight: 1.1 },
-      { name: { en: "Germany", ko: "독일" }, capital: { en: "Berlin", ko: "베를린" }, population: 83000000, lifeExpectancy: 81.0, sexRatio: "97.2 males / 100 females", flagUrl: "https://flagcdn.com/w80/de.png", weight: 1.1 },
-      { name: { en: "Thailand", ko: "태국" }, capital: { en: "Bangkok", ko: "방콕" }, population: 70000000, lifeExpectancy: 77.3, sexRatio: "98.3 males / 100 females", flagUrl: "https://flagcdn.com/w80/th.png", weight: 0.9 },
-      { name: { en: "United Kingdom", ko: "영국" }, capital: { en: "London", ko: "런던" }, population: 67000000, lifeExpectancy: 81.2, sexRatio: "98.7 males / 100 females", flagUrl: "https://flagcdn.com/w80/gb.png", weight: 0.9 },
-      { name: { en: "France", ko: "프랑스" }, capital: { en: "Paris", ko: "파리" }, population: 65000000, lifeExpectancy: 82.5, sexRatio: "95.3 males / 100 females", flagUrl: "https://flagcdn.com/w80/fr.png", weight: 0.8 },
-      { name: { en: "Italy", ko: "이탈리아" }, capital: { en: "Rome", ko: "로마" }, population: 60000000, lifeExpectancy: 83.4, sexRatio: "94.8 males / 100 females", flagUrl: "https://flagcdn.com/w80/it.png", weight: 0.8 },
-      { name: { en: "South Africa", ko: "남아프리카 공화국" }, capital: { en: "Pretoria", ko: "프리토리아" }, population: 60000000, lifeExpectancy: 64.1, sexRatio: "93.1 males / 100 females", flagUrl: "https://flagcdn.com/w80/za.png", weight: 0.8 }
-    ];
-
-    let currentLang = 'en';
-
-    function setLanguage(lang) {
-      currentLang = lang;
-      document.getElementById('title').innerText = lang === 'ko' ? '만약 당신이 랜덤한 나라에서 태어났다면...' : 'If You Were Randomly Born...';
-      document.getElementById('spin-btn').innerText = lang === 'ko' ? '룰렛 돌리기!' : 'Spin the Globe!';
-      // Hide previous result on language change
-      document.getElementById('result').style.display = 'none';
-    }
-
-    function weightedRandom() {
-      const total = countries.reduce((acc, c) => acc + c.weight, 0);
-      let r = Math.random() * total;
-      for (let c of countries) {
-        if (r < c.weight) return c;
-        r -= c.weight;
-      }
-    }
-
-    function spinRoulette() {
-      const country = weightedRandom();
-      const resultDiv = document.getElementById('result');
-      resultDiv.innerHTML = `
-        <img src="${country.flagUrl}" alt="Flag of ${country.name[currentLang]}" />
-        <h2>${country.name[currentLang]}</h2>
-        <p><strong>${currentLang === 'ko' ? '수도' : 'Capital'}:</strong> ${country.capital[currentLang]}</p>
-        <p><strong>${currentLang === 'ko' ? '총인구' : 'Population'}:</strong> ${country.population.toLocaleString()}</p>
-        <p><strong>${currentLang === 'ko' ? '평균 수명' : 'Life Expectancy'}:</strong> ${country.lifeExpectancy} ${currentLang === 'ko' ? '세' : 'years'}</p>
-        <p><strong>${currentLang === 'ko' ? '성비' : 'Sex Ratio'}:</strong> ${country.sexRatio}</p>
-      `;
-      resultDiv.style.display = 'block';
-    }
-  </script>
+    <script src="countries.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
