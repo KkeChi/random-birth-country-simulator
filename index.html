@@ -1,7 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>환생 국가 시뮬레이터</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    crossorigin=""
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
 <body>
   <header>
     <h1>환생 국가 시뮬레이터</h1>
-    <button id="darkModeToggle">다크모드</button>
+    <div class="top-buttons">
+      <button id="darkModeToggle">다크모드</button>
+    </div>
   </header>
 
   <div id="topAd" class="ad-container">광고 영역 (상단)</div>
@@ -10,22 +25,28 @@
 
   <button id="generateBtn">룰렛 돌리기</button>
 
-  <img
-    id="flagImage"
-    alt="국기"
-    style="width: 120px; height: 80px; border: 1px solid #ccc; margin: 10px auto; display: block;"
-  />
-
-  <div id="resultPanel" class="hidden" style="text-align: center;">
+  <div id="resultPanel" class="hidden">
     <p>국가: <span id="countryName"></span></p>
+    <img
+      id="flagImage"
+      alt="국기"
+      style="width: 120px; height: 80px; border: 1px solid #ccc; margin: 10px auto; display: block;"
+    />
     <p>출생 확률: <span id="probability"></span></p>
     <p>성별: <span id="gender"></span></p>
     <p>경제적 위치: <span id="econClass"></span></p>
   </div>
 
-  <button id="shareBtn" style="display: block; margin: 20px auto;">공유하기</button>
-
   <div id="bottomAd" class="ad-container">광고 영역 (하단)</div>
-  
-  <!-- ...스크립트 부분 그대로 -->
+
+  <footer>
+    <button id="shareBtn">공유하기</button>
+  </footer>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+    crossorigin=""
+  ></script>
+  <script src="script.js"></script>
 </body>
+</html>
