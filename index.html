@@ -2,79 +2,57 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="전 세계 인구 비율 기반 환생 시뮬레이터 - 다시 태어난다면 어느 나라에서 살게 될까?" />
-    <meta name="keywords" content="환생 시뮬레이터, 세계 인구, 국가, 성별, 경제 계층, 국기, 지도" />
-    <meta name="author" content="YourName" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>환생 시뮬레이터</title>
+    <meta name="description" content="인구 비율 기반 환생 국가 및 조건 시뮬레이터" />
+    <meta name="author" content="YourName" />
 
-    <!-- 광고 영역 (상단) -->
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f9f9f9;
-            color: #333;
-        }
-        header, footer {
-            text-align: center;
-            padding: 10px;
-            background-color: #eee;
-        }
-        #map {
-            width: 100%;
-            height: 400px;
-            margin: 0 auto;
-        }
-        .controls {
-            text-align: center;
-            margin: 20px;
-        }
-        .result {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .flag {
-            width: 100px;
-            margin-top: 10px;
-        }
-        .dark-mode {
-            background-color: #222;
-            color: #fff;
-        }
-    </style>
-
-    <!-- Leaflet CSS (integrity 제거) -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
-
-    <!-- Leaflet JS (integrity 제거) -->
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <!-- Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    />
+    <!-- 스타일 시트 -->
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
     <header>
-        <h1>🌍 환생 시뮬레이터</h1>
-        <div id="ad-top">[광고 자리]</div>
+        <h1>환생 시뮬레이터</h1>
+        <button id="darkModeToggle">다크모드 토글</button>
+        <button id="shareBtn">공유하기</button>
     </header>
 
-    <div id="map"></div>
+    <section id="adTop" class="ad-container">
+      <!-- 상단 광고 자리 -->
+      <p>광고 영역 (예: 구글 애드센스 등)</p>
+    </section>
 
-    <div class="controls">
-        <button id="spinBtn">룰렛 돌리기</button>
-        <button id="darkModeBtn">다크모드 전환</button>
-        <button id="shareBtn">공유하기</button>
-    </div>
+    <main>
+      <div id="map" style="height: 300px;"></div>
 
-    <div class="result" id="result">
-        <p>결과가 여기에 표시됩니다.</p>
-    </div>
+      <button id="generateBtn">룰렛 돌리기</button>
 
-    <footer>
-        <div id="ad-bottom">[하단 광고 자리]</div>
-    </footer>
+      <section id="resultPanel" class="hidden">
+        <h2>결과</h2>
+        <p><strong>국가:</strong> <span id="countryName"></span> <img id="flagImg" alt="국기" width="48" height="32" /></p>
+        <p><strong>출생 확률:</strong> <span id="probability"></span></p>
+        <p><strong>성별:</strong> <span id="gender"></span></p>
+        <p><strong>경제적 위치:</strong> <span id="econClass"></span></p>
+      </section>
+    </main>
 
-    <!-- Script -->
+    <section id="adBottom" class="ad-container">
+      <!-- 하단 광고 자리 -->
+      <p>광고 영역 (예: 구글 애드센스 등)</p>
+    </section>
+
+    <!-- Leaflet JS -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+      crossorigin=""
+    ></script>
+
+    <!-- script.js -->
     <script src="script.js"></script>
 </body>
 </html>
