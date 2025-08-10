@@ -1,207 +1,60 @@
-// script.json
-// 실행 흐름:
-// 1) loadCountries() -> restcountries API 호출로 countriesRaw 생성
-// 2) buildInternalList() -> 확률 계산, 데이터 정리
-// 3) loadGeoJson() -> world geojson 로드 (경계 하이라이트용)
-// 4) UI 이벤트 바인딩
+const countries = [
+    { name: "대한민국", probability: 0.67, lat: 36.5, lng: 127.5 },
+    { name: "미국", probability: 4.25, lat: 37.1, lng: -95.7 },
+    { name: "중국", probability: 17.8, lat: 35.8, lng: 104.1 },
+    { name: "인도", probability: 17.6, lat: 20.6, lng: 78.9 },
+    // ... 나머지 국가들
+];
 
-const REST_ALL = 'https://restcountries.com/v3.1/all'; // 인구, 이름, cca3, flags, latlng 제공. :contentReference[oaicite:2]{index=2}
-const GEOJSON_URL = 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson';
+const genders = ["남성", "여성"];
+const classes = ["부유층", "중산층", "서민", "하층민"];
 
-let countriesList = []; // {name, pop, prob, cca3, lat, lng, flag}
-let worldTotal = 0;
-let map, geoLayer, highlightedLayer;
+let map;
+let marker;
 
-async function init(){
-  try {
-    showSpinner(true);
-    const raw = await fetch(REST_ALL).then(r=>r.json());
-    buildCountries(raw);
-    await initMap(); // load geojson and set up map
-    bindUI();
-  } catch (e){
-    console.error(e);
-    alert('데이터 로드에 실패했습니다. 콘솔을 확인하세요.');
-  } finally {
-    showSpinner(false);
-  }
-}
-
-function showSpinner(on){
-  // 간단 표시: disable button
-  document.getElementById('spinBtn').disabled = on;
-}
-
-function buildCountries(raw){
-  // Filter out entries without population; map to list
-  const items = raw
-    .filter(c => typeof c.population === 'number' && c.population > 0 && c.cca3)
-    .map(c => {
-      const nameKor = (c.translations && c.translations.kor && c.translations.kor.common) ? c.translations.kor.common : c.name.common;
-      const latlng = Array.isArray(c.latlng) && c.latlng.length>=2 ? c.latlng : (c.capitalInfo && c.capitalInfo.latlng) || [0,0];
-      return {
-        name: nameKor || c.name.common,
-        engName: c.name.common,
-        pop: c.population,
-        cca3: c.cca3,
-        lat: latlng[0],
-        lng: latlng[1],
-        flag: c.flags && (c.flags.png || c.flags.svg) ? (c.flags.png || c.flags.svg) : null
-      };
-    });
-
-  worldTotal = items.reduce((s,i)=> s + i.pop, 0);
-
-  countriesList = items.map(i => {
-    const prob = (i.pop / worldTotal) * 100;
-    return {...i, prob};
-  });
-
-  // sort by probability (desc) — optional but useful
-  countriesList.sort((a,b)=> b.prob - a.prob);
-
-  console.log('countries loaded:', countriesList.length, 'worldTotal=', worldTotal.toLocaleString());
-}
-
-async function initMap(){
-  map = L.map('map', {zoomControl: true, attributionControl: true}).setView([20,0], 2);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 7,
-    attribution: '© OpenStreetMap contributors'
-  }).addTo(map);
-
-  // load geojson for country borders
-  const geo = await fetch(GEOJSON_URL).then(r=>r.json());
-  geoLayer = L.geoJSON(geo, {
-    style: feature => ({
-      color: '#888',
-      weight: 0.6,
-      fillOpacity: 0
-    }),
-    onEachFeature: (feature, layer) => {
-      // store feature property for quick access
-      layer.featureId = feature.properties.ISO_A3 || feature.properties.iso_a3 || feature.properties.ADM0_A3 || null;
+document.getElementById("generateBtn").addEventListener("click", () => {
+    const country = getRandomCountry();
+    if (!country) {
+        alert("국가 데이터가 없습니다.");
+        return;
     }
-  }).addTo(map);
-}
 
-function bindUI(){
-  document.getElementById('spinBtn').addEventListener('click', onSpin);
-  document.getElementById('resetBtn').addEventListener('click', resetUI);
-  document.getElementById('darkToggle').addEventListener('click', toggleDark);
-  // set initial theme based on prefers-color-scheme
-  if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches){
-    document.documentElement.classList.add('dark');
-  }
-}
+    const gender = genders[Math.floor(Math.random() * genders.length)];
+    const economicClass = classes[Math.floor(Math.random() * classes.length)];
 
-function onSpin(){
-  const country = weightedRandomCountry();
-  if(!country){ alert('국가 데이터가 없습니다.'); return; }
+    document.getElementById("countryName").textContent = country.name;
+    document.getElementById("probability").textContent = `출생 확률: ${country.probability.toFixed(2)}%`;
+    document.getElementById("gender").textContent = `성별: ${gender}`;
+    document.getElementById("class").textContent = `경제적 위치: ${economicClass}`;
 
-  // gender: attempt to use sex ratio if available (REST API doesn't provide sex ratio), fallback 50/50
-  const gender = randomChoiceWeighted(['남성','여성'], [50,50]); // placeholder
+    document.getElementById("result").classList.remove("hidden");
 
-  // economic class: heuristic by region (continent) — use simple mapping by region of cca3 (approx by lat)
-  const econ = pickEconomicClass(country);
+    showMap(country.lat, country.lng);
+});
 
-  // fill UI
-  const flagImg = document.getElementById('flagImg');
-  if(country.flag) { flagImg.src = country.flag; flagImg.style.display='inline-block'; flagImg.alt = country.engName + ' flag'; }
-  else { flagImg.style.display='none'; }
-
-  document.getElementById('countryName').textContent = `${country.name} (${country.engName})`;
-  document.getElementById('probability').textContent = `출생 확률: ${formatProbability(country.prob)}`;
-  document.getElementById('gender').textContent = `성별: ${gender}`;
-  document.getElementById('econClass').textContent = `경제적 위치: ${econ}`;
-
-  document.getElementById('resultPanel').classList.remove('hidden');
-
-  highlightCountryOnMap(country.cca3, country.lat, country.lng);
-}
-
-function resetUI(){
-  document.getElementById('resultPanel').classList.add('hidden');
-  if(highlightedLayer){ geoLayer.resetStyle(highlightedLayer); }
-  if(map){ map.setView([20,0], 2); }
-}
-
-function weightedRandomCountry(){
-  // weighted by prob (prob is percent, but any proportional value works)
-  const total = countriesList.reduce((s,c)=> s + c.prob, 0);
-  let r = Math.random() * total;
-  for(let c of countriesList){
-    r -= c.prob;
-    if(r <= 0) return c;
-  }
-  return countriesList[countriesList.length-1];
-}
-
-function formatProbability(p){
-  // p is percent (e.g., 17.8)
-  if(p >= 1) return p.toFixed(1) + '%';        // 1% 이상 -> 1자리
-  if(p >= 0.01) return p.toFixed(2) + '%';     // 0.01~1% -> 2자리
-  return p.toFixed(4) + '%';                   // 0.01% 미만 -> 4자리
-}
-
-function randomChoiceWeighted(items, weights){
-  const total = weights.reduce((s,w)=> s+w, 0);
-  let r = Math.random() * total;
-  for(let i=0;i<items.length;i++){
-    r -= weights[i];
-    if(r <= 0) return items[i];
-  }
-  return items[items.length-1];
-}
-
-function pickEconomicClass(country){
-  // Very simple heuristic using latitude to approximate region:
-  // (This is a heuristic placeholder; you can replace with more accurate per-country distributions later)
-  // - Americas (lat between -60 and 70 & lng < -30): mix
-  // - Europe/NorthAmerica/Oceania: higher middle/upper
-  // - Africa/Asia: higher lower/hardship
-  const {lat, lng} = country;
-  // Determine rough region by lat/lng
-  // We'll use continent heuristics by cca3 mapping might be better, but for now coarse:
-  // Try to find country in list via cca3 and map by region from REST data if available
-  // However we didn't keep region; fallback simple lat/lng
-  if(lat >= 35 && (lng >= -30 && lng <= 60)) {
-    // Europe/Central Asia / North Africa -> treat as mixed with higher middle
-    return randomChoiceWeighted(['부유층','중산층','서민','하층민'], [8,60,25,7]);
-  } else if(lat > -20 && lat < 35 && (lng >= 60 && lng <= 160)) {
-    // much of Asia
-    return randomChoiceWeighted(['부유층','중산층','서민','하층민'], [5,30,50,15]);
-  } else if(lat < 35 && lng < -30) {
-    // Americas
-    return randomChoiceWeighted(['부유층','중산층','서민','하층민'], [6,40,45,9]);
-  } else if(lat < 35 && (lng >= -30 && lng <= 60)) {
-    // Africa / Middle East region
-    return randomChoiceWeighted(['부유층','중산층','서민','하층민'], [3,20,55,22]);
-  } else {
-    // fallback
-    return randomChoiceWeighted(['부유층','중산층','서민','하층민'], [5,40,45,10]);
-  }
-}
-
-async function highlightCountryOnMap(cca3, lat, lng){
-  // reset previous styles
-  geoLayer.eachLayer(layer => {
-    geoLayer.resetStyle(layer);
-    if(layer.feature && (layer.feature.properties.ISO_A3 === cca3 || layer.feature.properties.iso_a3 === cca3 || layer.feature.properties.ADM0_A3 === cca3)){
-      highlightedLayer = layer;
-      layer.setStyle({
-        fillColor: '#ff9800',
-        fillOpacity: 0.6,
-        color: '#ff6d00',
-        weight: 1.5
-      });
-      // zoom to layer bounds if available
-      if(layer.getBounds) map.fitBounds(layer.getBounds(), {maxZoom:5});
+function getRandomCountry() {
+    const total = countries.reduce((sum, c) => sum + c.probability, 0);
+    if (total === 0) return null;
+    let r = Math.random() * total;
+    for (let country of countries) {
+        r -= country.probability;
+        if (r <= 0) return country;
     }
-  });
-
-  // place a marker as fallback (centroid)
-  L.marker([lat, lng]).addTo(map);
 }
 
-init();
+function showMap(lat, lng) {
+    if (!map) {
+        map = L.map('map').setView([lat, lng], 4);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        marker = L.marker([lat, lng]).addTo(map);
+    } else {
+        map.setView([lat, lng], 4);
+        marker.setLatLng([lat, lng]);
+    }
+}
+
+document.getElementById("darkModeToggle").addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+});
