@@ -28,5 +28,4 @@
     {"name":"미얀마","probability":0.54,"lat":21.9,"lng":95.9,"flag":"https://flagcdn.com/w320/mm.png"},
     {"name":"케냐","probability":0.53,"lat":-0.4,"lng":37.8,"flag":"https://flagcdn.com/w320/ke.png"},
     {"name":"한국","probability":0.67,"lat":36.5,"lng":127.5,"flag":"https://flagcdn.com/w320/kr.png"}
-    //
 ]
