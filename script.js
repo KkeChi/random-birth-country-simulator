@@ -25,9 +25,9 @@ document.getElementById("generateBtn").addEventListener("click", () => {
     document.getElementById("countryName").textContent = country.name;
     document.getElementById("probability").textContent = `출생 확률: ${country.probability.toFixed(2)}%`;
     document.getElementById("gender").textContent = `성별: ${gender}`;
-    document.getElementById("class").textContent = `경제적 위치: ${economicClass}`;
+    document.getElementById("econClass").textContent = `경제적 위치: ${economicClass}`;
 
-    document.getElementById("result").classList.remove("hidden");
+    document.getElementById("resultPanel").classList.remove("hidden");
 
     showMap(country.lat, country.lng);
 });
@@ -55,6 +55,6 @@ function showMap(lat, lng) {
     }
 }
 
-document.getElementById("darkModeToggle").addEventListener("click", () => {
+document.getElementById("darkToggle").addEventListener("click", () => {
     document.body.classList.toggle("dark-mode");
 });
