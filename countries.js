@@ -1,0 +1,15 @@
+const countries = [
+    { name: "중국", probability: 17.8, lat: 35.8, lng: 104.1 },
+    { name: "인도", probability: 17.6, lat: 20.6, lng: 78.9 },
+    { name: "미국", probability: 4.25, lat: 37.1, lng: -95.7 },
+    { name: "인도네시아", probability: 3.51, lat: -2.5, lng: 118.0 },
+    { name: "파키스탄", probability: 2.83, lat: 30.4, lng: 69.3 },
+    { name: "나이지리아", probability: 2.78, lat: 9.0, lng: 8.7 },
+    { name: "브라질", probability: 2.65, lat: -14.2, lng: -51.9 },
+    { name: "방글라데시", probability: 2.11, lat: 23.7, lng: 90.3 },
+    { name: "러시아", probability: 1.87, lat: 61.5, lng: 105.3 },
+    { name: "멕시코", probability: 1.65, lat: 23.6, lng: -102.5 },
+    { name: "일본", probability: 1.43, lat: 36.2, lng: 138.3 },
+    { name: "대한민국", probability: 0.67, lat: 36.5, lng: 127.5 },
+    // 나머지 183개국...
+];
