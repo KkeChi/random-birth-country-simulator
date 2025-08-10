@@ -1,39 +1,72 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>환생 국가 시뮬레이터</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="환생 시뮬레이터 - 세계 인구 비율 기반 국가, 성별, 경제적 환경 시뮬레이션" />
+    <meta name="keywords" content="환생, 시뮬레이터, 나라, 성별, 경제, 지도, 국기" />
+    <meta name="author" content="YourName" />
+    <title>환생 시뮬레이터</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+      integrity="sha256-sA+4+6ZyT6vQv7pqXn/j9kZXM2E3zsl3r3bZj3njf14="
+      crossorigin=""
+    />
 </head>
 <body>
     <header>
-        <h1>환생하면 어디서 태어날까?</h1>
+        <h1>환생 시뮬레이터</h1>
+        <button id="darkModeToggle" aria-label="다크 모드 토글">🌓 다크모드</button>
     </header>
 
-    <!-- 광고 영역 -->
-    <div id="adBanner">
-        <!-- 구글 애드센스 코드나 배너 광고 자리 -->
-        <p>여기에 광고가 표시됩니다.</p>
-    </div>
+    <section id="adTop" class="ad-space">
+        <!-- 광고 영역 (상단) -->
+        <p>광고 공간</p>
+    </section>
 
-    <main>
-        <button id="generateBtn">룰렛 돌리기</button>
+    <section id="mapContainer">
+        <div id="map" aria-label="지도"></div>
+    </section>
 
-        <div id="resultPanel" class="hidden">
+    <section id="controls">
+        <button id="generateBtn" aria-label="룰렛 돌리기">룰렛 돌리기</button>
+        
+        <div id="resultPanel" class="hidden" aria-live="polite" aria-atomic="true">
             <h2>결과</h2>
-            <img id="countryFlag" alt="국기" class="flag">
-            <p id="countryName"></p>
-            <p id="probability"></p>
-            <p id="gender"></p>
-            <p id="econClass"></p>
+            <p><strong>국가:</strong> <span id="countryName">—</span> <img id="flagImg" alt="국기" src="" width="30" height="20" /></p>
+            <p id="probability">출생 확률: —</p>
+            <p id="gender">성별: —</p>
+            <p id="econClass">경제적 위치: —</p>
         </div>
 
-        <div id="map" style="height: 400px; margin-top: 20px;"></div>
-    </main>
+        <button id="shareBtn" aria-label="공유하기">공유하기</button>
+    </section>
 
+    <section id="adBottom" class="ad-space">
+        <!-- 광고 영역 (하단) -->
+        <p>광고 공간</p>
+    </section>
+
+    <!-- 공유 모달 -->
+    <div id="shareModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="shareModalTitle">
+      <div class="modal-content">
+        <h2 id="shareModalTitle">공유하기</h2>
+        <button id="copyLinkBtn" aria-label="링크 복사">🔗 링크 복사</button>
+        <a href="#" id="fbShareBtn" target="_blank" rel="noopener noreferrer" aria-label="페이스북 공유">페이스북 공유</a>
+        <a href="#" id="twShareBtn" target="_blank" rel="noopener noreferrer" aria-label="트위터 공유">트위터 공유</a>
+        <button id="kakaoShareBtn" aria-label="카카오톡 공유">카카오톡 공유</button>
+        <button id="closeShareModal" aria-label="공유 모달 닫기">닫기</button>
+      </div>
+    </div>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+      integrity="sha256-nDR+3Tj1NxZCYY4X9Dq+94Y7xb0QH4IQa2xj3t0LGmo="
+      crossorigin=""
+    ></script>
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
